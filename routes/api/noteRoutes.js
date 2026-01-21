@@ -36,6 +36,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         // This needs an authorization check
+        if (req.body.user && req.body.user !== req.user._id) {
+            return res.status(403).json({ message: 'User is not authorized to update this note.' });
+        }
+
         const note = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!note) {
             return res.status(404).json({ message: 'No note found with this id!' });
@@ -50,6 +54,9 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         // This needs an authorization check
+        if (req.body.user && req.body.user !== req.user._id) {
+            return res.status(403).json({ message: 'User is not authorized to delete this note.' });
+        }
         const note = await Note.findByIdAndDelete(req.params.id);
         if (!note) {
             return res.status(404).json({ message: 'No note found with this id!' });
